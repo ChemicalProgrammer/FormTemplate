@@ -348,17 +348,88 @@
   .empty-state p { max-width: 470px; margin: 8px 0 0; font-size: 13px; line-height: 1.5; }
   .empty-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 14px; border-radius: 15px; color: var(--blue); background: var(--blue-soft); font-size: 25px; }
 
-  .characteristic-cards { display: grid; gap: 16px; }
-  .characteristic-card { overflow: hidden; border: 1px solid #ded9f1; border-radius: 15px; background: #fff; box-shadow: 0 5px 16px rgba(76, 59, 120, 0.045); }
-  .characteristic-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 14px 17px; background: linear-gradient(100deg, var(--violet-soft), #f8fbff); }
-  .characteristic-title { display: flex; align-items: center; gap: 10px; }
-  .component-code-chip { padding: 5px 8px; border-radius: 7px; color: #5b21b6; background: rgba(255, 255, 255, 0.78); box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.14); font-size: 11px; font-weight: 700; }
-  .characteristic-header strong { font-size: 14px; }
-  .component-percentage-chip { color: #475569; font-size: 12px; font-weight: 700; }
-  .characteristic-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .characteristic-item { min-width: 0; padding: 13px 15px; border-top: 1px solid #edf1f6; border-right: 1px solid #edf1f6; }
-  .characteristic-item span { display: block; overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-  .characteristic-item strong { display: block; margin-top: 5px; overflow-wrap: anywhere; color: #334155; font-size: 13px; }
+  .characteristic-table-shell {
+    overflow: auto;
+    width: 100%;
+    border: 1px solid #ded9f1;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(76, 59, 120, 0.055);
+    scrollbar-color: #c8b8ee #f4f1fb;
+    scrollbar-width: thin;
+  }
+  .characteristic-table-shell::-webkit-scrollbar { height: 10px; }
+  .characteristic-table-shell::-webkit-scrollbar-track { background: #f4f1fb; }
+  .characteristic-table-shell::-webkit-scrollbar-thumb { border: 2px solid #f4f1fb; border-radius: 999px; background: #c8b8ee; }
+
+  .characteristic-table {
+    width: max-content;
+    min-width: 100%;
+    border-spacing: 0;
+    border-collapse: separate;
+    font-size: 12px;
+  }
+  .characteristic-table th,
+  .characteristic-table td {
+    min-width: 145px;
+    max-width: 220px;
+    padding: 12px 14px;
+    border-right: 1px solid #ebe7f4;
+    border-bottom: 1px solid #ebe7f4;
+    overflow-wrap: anywhere;
+    text-align: left;
+    vertical-align: middle;
+  }
+  .characteristic-table th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    color: #5b467e;
+    background: linear-gradient(180deg, var(--violet-soft), #f7f4fd);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .characteristic-table td { color: #3f4758; background: #fff; }
+  .characteristic-table tbody tr:nth-child(even) td { background: #fcfaff; }
+  .characteristic-table tbody tr:hover td { background: #f8f5ff; }
+  .characteristic-table th:last-child,
+  .characteristic-table td:last-child { border-right: 0; }
+  .characteristic-table tbody tr:last-child td { border-bottom: 0; }
+
+  .characteristic-table th:nth-child(1),
+  .characteristic-table td:nth-child(1) {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    width: 135px;
+    min-width: 135px;
+    max-width: 135px;
+  }
+  .characteristic-table th:nth-child(2),
+  .characteristic-table td:nth-child(2) {
+    position: sticky;
+    left: 135px;
+    z-index: 3;
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+    box-shadow: 7px 0 12px -10px rgba(50, 39, 79, 0.7);
+  }
+  .characteristic-table th:nth-child(1),
+  .characteristic-table th:nth-child(2) { z-index: 4; background: #eee7fb; }
+  .characteristic-table tbody tr:nth-child(odd) td:nth-child(-n+2) { background: #fff; }
+  .characteristic-table tbody tr:nth-child(even) td:nth-child(-n+2) { background: #fcfaff; }
+  .characteristic-table tbody tr:hover td:nth-child(-n+2) { background: #f8f5ff; }
+  .characteristic-table th:nth-child(3),
+  .characteristic-table td:nth-child(3) { min-width: 105px; max-width: 105px; text-align: right; }
+
+  .component-code-chip { display: inline-flex; padding: 5px 8px; border-radius: 7px; color: #5b21b6; background: var(--violet-soft); box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.14); font-size: 11px; font-weight: 800; white-space: nowrap; }
+  .component-name-cell { color: #273247 !important; font-weight: 700; }
+  .component-percentage-cell { color: #5b467e !important; font-weight: 800; white-space: nowrap; }
+  .characteristic-value-cell { line-height: 1.4; }
 
   .table-scroll { overflow-x: auto; border: 1px solid #e3dfcf; border-radius: 14px; box-shadow: 0 5px 16px rgba(120, 88, 31, 0.035); }
   .parameter-table { width: 100%; min-width: 760px; border-collapse: collapse; }
@@ -465,7 +536,8 @@
     .step-tab { flex-direction: column; gap: 4px; font-size: 11px; }
     .field-grid { grid-template-columns: 1fr; }
     .field-group.full-width { grid-column: auto; }
-    .characteristic-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .characteristic-table th:nth-child(2),
+    .characteristic-table td:nth-child(2) { position: static; width: 220px; min-width: 220px; max-width: 220px; box-shadow: none; }
     .component-table-head { display: none; }
     .component-row { grid-template-columns: 1fr 1fr 42px; }
     .component-row .component-name { grid-column: 1 / -1; grid-row: 2; }
@@ -482,7 +554,8 @@
     .component-row { grid-template-columns: 1fr 42px; }
     .component-row .component-percentage { grid-column: 1; grid-row: 3; }
     .component-row .remove-component { grid-column: 2; grid-row: 1; }
-    .characteristic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .characteristic-table th:nth-child(1),
+    .characteristic-table td:nth-child(1) { width: 120px; min-width: 120px; max-width: 120px; }
     .form-actions .primary-button { flex: 1; }
     .modal-actions { flex-direction: column-reverse; }
     .modal-actions button { width: 100%; }

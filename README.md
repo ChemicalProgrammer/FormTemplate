@@ -32,6 +32,7 @@ generar una hoja de cálculo a partir de una plantilla de Google Sheets.
 | `Config.gs` | Nombre de la app, carpetas `01`–`04` y sufijo del archivo generado. |
 | `FieldDefinitions.gs` | Campos de A, nombres/unidades de C y parámetros de D. |
 | `Components.gs` | Base de datos de componentes y sus 15 características. |
+| `COMPONENT_DATABASE_EXAMPLE.md` | Ejemplo completo para sustituir la base ficticia por datos reales. |
 | `TemplateMapping.gs` | Relación editable entre cada dato y su hoja/celda destino. |
 | `SettingsService.gs` | Opciones personales y validación de IDs de Drive. |
 | `Validation.gs` | Reglas de negocio del formulario. |
@@ -54,6 +55,10 @@ generar una hoja de cálculo a partir de una plantilla de Google Sheets.
 Los campos de `general`, A y D se asignan a celdas individuales. B y C son
 listas variables: `startRow` define la primera fila y `columns` define dónde se
 escribe cada propiedad.
+
+En la interfaz, la sección C presenta una sola tabla comparativa: cada
+componente seleccionado ocupa una fila y las 15 características comparten un
+único encabezado.
 
 Ejemplo de un campo individual:
 

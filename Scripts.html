@@ -292,41 +292,61 @@
       if (!state.schema) return;
       var selected = getSelectedComponents_().filter(function(item) { return item.component; });
       var empty = document.getElementById('section-c-empty');
-      var container = document.getElementById('characteristic-cards');
-      container.replaceChildren();
+      var tableContainer = document.getElementById('characteristic-table-container');
+      var tableHead = document.getElementById('characteristic-table-head');
+      var tableBody = document.getElementById('characteristic-table-body');
+
+      tableHead.replaceChildren();
+      tableBody.replaceChildren();
       empty.classList.toggle('hidden', selected.length > 0);
+      tableContainer.classList.toggle('hidden', selected.length === 0);
+
+      if (!selected.length) return;
+
+      var headerRow = document.createElement('tr');
+      ['Código', 'Nombre', 'Porcentaje'].forEach(function(label) {
+        var header = createElement_('th', '', label);
+        header.scope = 'col';
+        headerRow.appendChild(header);
+      });
+
+      state.schema.sectionC.characteristics.forEach(function(characteristic) {
+        var label = characteristic.label;
+        if (characteristic.unit && characteristic.unit !== '-') {
+          label += ' (' + characteristic.unit + ')';
+        }
+        var header = createElement_('th', '', label);
+        header.scope = 'col';
+        header.title = label;
+        headerRow.appendChild(header);
+      });
+      tableHead.appendChild(headerRow);
 
       selected.forEach(function(item) {
-        var card = createElement_('article', 'characteristic-card');
-        var header = createElement_('div', 'characteristic-header');
-        var title = createElement_('div', 'characteristic-title');
-        title.appendChild(createElement_('span', 'component-code-chip', item.code));
-        title.appendChild(createElement_('strong', '', item.name));
-        header.appendChild(title);
-        header.appendChild(createElement_(
-          'span',
-          'component-percentage-chip',
-          Number.isFinite(item.percentage) ? item.percentage + '%' : 'Sin porcentaje'
+        var row = document.createElement('tr');
+
+        var codeCell = document.createElement('td');
+        codeCell.appendChild(createElement_('span', 'component-code-chip', item.code));
+        row.appendChild(codeCell);
+
+        var nameCell = createElement_('td', 'component-name-cell', item.name);
+        nameCell.title = item.name;
+        row.appendChild(nameCell);
+
+        row.appendChild(createElement_(
+          'td',
+          'component-percentage-cell',
+          Number.isFinite(item.percentage) ? item.percentage + '%' : '—'
         ));
 
-        var grid = createElement_('div', 'characteristic-grid');
         state.schema.sectionC.characteristics.forEach(function(characteristic) {
-          var characteristicItem = createElement_('div', 'characteristic-item');
-          var label = characteristic.label + (characteristic.unit && characteristic.unit !== '-' ? ' (' + characteristic.unit + ')' : '');
-          characteristicItem.appendChild(createElement_('span', '', label));
-          characteristicItem.appendChild(createElement_(
-            'strong',
-            '',
-            item.component.characteristics[characteristic.id] == null
-              ? '—'
-              : String(item.component.characteristics[characteristic.id])
-          ));
-          grid.appendChild(characteristicItem);
+          var value = item.component.characteristics[characteristic.id];
+          var displayedValue = value == null || value === '' ? '—' : String(value);
+          var cell = createElement_('td', 'characteristic-value-cell', displayedValue);
+          cell.title = displayedValue;
+          row.appendChild(cell);
         });
-
-        card.appendChild(header);
-        card.appendChild(grid);
-        container.appendChild(card);
+        tableBody.appendChild(row);
       });
     }
 

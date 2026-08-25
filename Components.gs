@@ -3,6 +3,7 @@
  *
  * Reemplace los ejemplos por los componentes reales. Cada componente debe
  * conservar un código único y 15 valores de características (C1 a C15).
+ * Consulte COMPONENT_DATABASE_EXAMPLE.md para ver un ejemplo completo.
  */
 var COMPONENT_DATABASE = Object.freeze([
   createExampleComponent_('COMP-001', 'Componente 1', 10),
