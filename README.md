@@ -1,138 +1,98 @@
 # Case Form — Google Apps Script
 
-Aplicación web para capturar un caso, crear su expediente en Google Drive y
-generar una hoja de cálculo a partir de una plantilla de Google Sheets.
+Web application for capturing a case, creating its Google Drive folder
+structure, and generating a spreadsheet from a Google Sheets template.
 
-## Qué hace
+## Current behavior
 
-1. La web abre directamente el formulario. No muestra Opciones al iniciar.
-2. Cada usuario puede configurar una carpeta destino y una plantilla desde el
-   botón de engrane.
-3. Al enviar el formulario, crea esta estructura:
+1. The web app opens directly on the form. It does not force the Settings
+   dialog to open at startup.
+2. The case title is captured once above the form sections. It is the only
+   required form value.
+3. Sections A, B, and D may be completely empty.
+4. Component percentages are optional and do not have to total 100%.
+5. Section C displays one comparison table with one row per selected component
+   and one shared header for C1 through C15.
+6. On submission, the application creates:
 
    ```text
-   Nombre del caso/
+   Case title/
    ├── 01/
-   │   └── Nombre del caso - Formulario
+   │   └── Case title - Form
    ├── 02/
    ├── 03/
    └── 04/
    ```
 
-4. Copia la plantilla de Google Sheets dentro de `01`.
-5. Escribe los datos en las hojas y celdas definidas en `TemplateMapping.gs`.
-6. Impide crear un caso duplicado en la misma carpeta destino.
-7. Valida que la composición de B sea 100% y que en D se cumpla
-   `Min ≤ Target ≤ Max`.
+7. It copies the Google Sheets template into `01` and writes values according
+   to `TemplateMapping.gs`.
+8. The success dialog can be closed with its X button, by clicking the
+   backdrop, or by pressing Escape. Closing it preserves the completed form;
+   **Create another case** closes it and resets the form.
 
-## Archivos y dónde editar
+## Main files
 
-| Archivo | Responsabilidad |
+| File | Responsibility |
 | --- | --- |
-| `Config.gs` | Nombre de la app, carpetas `01`–`04` y sufijo del archivo generado. |
-| `FieldDefinitions.gs` | Campos de A, nombres/unidades de C y parámetros de D. |
-| `Components.gs` | Base de datos de componentes y sus 15 características. |
-| `COMPONENT_DATABASE_EXAMPLE.md` | Ejemplo completo para sustituir la base ficticia por datos reales. |
-| `TemplateMapping.gs` | Relación editable entre cada dato y su hoja/celda destino. |
-| `SettingsService.gs` | Opciones personales y validación de IDs de Drive. |
-| `Validation.gs` | Reglas de negocio del formulario. |
-| `DriveService.gs` | Creación de la carpeta del caso y sus subcarpetas. |
-| `TemplateService.gs` | Copia de la plantilla y escritura en Google Sheets. |
-| `WebApp.gs` | Entrada de la web app y coordinación del envío. |
-| `Index.html` | Estructura de la interfaz. |
-| `Styles.html` | Estilos visuales. |
-| `Scripts.html` | Comportamiento de la interfaz. |
-| `Tests.gs` | Autoprueba sin escribir archivos en Drive. |
+| `Config.gs` | Application name, numbered folders, and generated filename suffix. |
+| `FieldDefinitions.gs` | Optional Section A fields, C headers/units, and D parameters. |
+| `Components.gs` | Component database and C1–C15 values. |
+| `COMPONENT_DATABASE_EXAMPLE.md` | Complete example of a realistic component database. |
+| `TemplateMapping.gs` | Mapping from each form value to its destination sheet/cell. |
+| `SettingsService.gs` | Per-user Drive folder and template settings. |
+| `Validation.gs` | Server-side normalization; only the case title is required. |
+| `DriveService.gs` | Duplicate check and creation of the case folder structure. |
+| `TemplateService.gs` | Template copy and Google Sheets value insertion. |
+| `WebApp.gs` | Web entry point and submission orchestration. |
+| `Index.html` | Interface structure and English labels. |
+| `Styles.html` | Visual styling and responsive behavior. |
+| `Scripts.html` | Client-side behavior. |
+| `Tests.gs` | Structural self-test without Drive writes. |
 
-## Preparar la plantilla
+## Case title mapping
 
-1. Cree o seleccione un archivo nativo de Google Sheets.
-2. Abra `TemplateMapping.gs`.
-3. Cambie los nombres de hoja y las celdas de ejemplo para que coincidan con la
-   plantilla real.
-4. Revise `GOOGLE_SHEETS_TEMPLATE.md` para conocer el formato del mapa.
-
-Los campos de `general`, A y D se asignan a celdas individuales. B y C son
-listas variables: `startRow` define la primera fila y `columns` define dónde se
-escribe cada propiedad.
-
-En la interfaz, la sección C presenta una sola tabla comparativa: cada
-componente seleccionado ocupa una fila y las 15 características comparten un
-único encabezado.
-
-Ejemplo de un campo individual:
+The title is not repeated in Section A. It is written directly from the top
+field through:
 
 ```javascript
-A_SHORT_1: { sheet: 'Formulario', cell: 'B5' }
-```
-
-Ejemplo de una lista:
-
-```javascript
-sectionB: {
-  sheet: 'Componentes',
-  startRow: 3,
-  maxRows: 50,
-  percentageAsDecimal: true,
-  columns: { code: 'A', name: 'B', percentage: 'C' }
+general: {
+  caseName: { sheet: 'Form', cell: 'B2' }
 }
 ```
 
-## Instalar o actualizar el proyecto
+Change this destination in `TemplateMapping.gs` to match the real template.
 
-En el editor de Apps Script, cree o reemplace los archivos `.gs` y `.html` con
-los de esta carpeta. Asegúrese de agregar el nuevo archivo
-`TemplateMapping.gs`.
+## Template setup
 
-Abra **Configuración del proyecto**, active la visualización del manifiesto y
-reemplace `appsscript.json`. El manifiesto utiliza permisos de Drive, Google
-Sheets y propiedades de usuario; ya no utiliza el permiso de Google Docs.
+1. Create or select a native Google Sheets file.
+2. Open `TemplateMapping.gs`.
+3. Change the example sheet names and cells to match the real template.
+4. Review `GOOGLE_SHEETS_TEMPLATE.md` for mapping details.
 
-## Probar
+The example mapping expects sheets named `Form`, `Components`, and
+`Characteristics`. Names must match the real template exactly.
 
-1. En el selector de funciones ejecute `runProjectSelfTest`.
-2. Autorice los permisos solicitados.
-3. El resultado debe incluir `ok: true`.
+## Test and deploy
 
-La autoprueba revisa los conteos del formulario y que todos los campos estén
-mapeados. No valida que las pestañas existan en una plantilla concreta; eso se
-comprueba cuando se crea el primer caso.
+1. Run `runProjectSelfTest` from the Apps Script editor.
+2. Confirm the returned object contains `ok: true`.
+3. Select **Deploy → New deployment → Web app**.
+4. Prefer **Execute as: User accessing the web app** when every user should
+   operate with their own Drive permissions.
+5. Restrict access to the appropriate organization or group.
 
-## Desplegar
+After changing an existing deployment, select **Deploy → Manage deployments**,
+edit the deployment, choose **New version**, and deploy it again.
 
-1. Seleccione **Implementar → Nueva implementación → Aplicación web**.
-2. Para que cada usuario trabaje con sus propios permisos y opciones, seleccione
-   **Ejecutar como: usuario que accede a la aplicación web** cuando esté
-   disponible.
-3. Limite el acceso a la organización o al grupo correspondiente.
-4. Autorice Drive, Google Sheets y almacenamiento de propiedades.
-5. Abra la URL terminada en `/exec`.
+## Settings and recovery
 
-Después de modificar una implementación existente, use **Implementar →
-Administrar implementaciones**, edítela y seleccione **Nueva versión**.
+The Settings dialog accepts either complete Drive URLs or IDs for the
+destination folder and Google Sheets template. These values are currently saved
+per user with `PropertiesService.getUserProperties()`.
 
-## Configurar la web
+The template itself is never modified. The application writes only to a copy.
+If generation fails after the case folder is created, the incomplete case
+folder is moved to Drive trash, where it can still be recovered.
 
-La pantalla abre directamente el formulario. Si todavía no existen opciones,
-se muestra un aviso en la parte superior, pero no se abre una ventana modal.
-
-1. Presione el engrane **Opciones**.
-2. Pegue la URL o el ID de la carpeta destino.
-3. Pegue la URL o el ID de la plantilla de Google Sheets.
-4. Presione **Validar y guardar**.
-
-Si se intenta enviar sin configuración, la aplicación abre Opciones en ese
-momento.
-
-## Consideraciones
-
-- La plantilla debe ser de Google Sheets, no Excel ni Google Docs.
-- Los valores se escriben en una copia; la plantilla original no se modifica.
-- Las opciones se almacenan de forma separada por usuario mediante
-  `PropertiesService.getUserProperties()`.
-- `percentageAsDecimal: true` escribe 25% como `0.25`; las celdas deben tener
-  formato de porcentaje en la plantilla.
-- Si falla la generación después de crear la estructura, la carpeta incompleta
-  se envía a la papelera para que sea recuperable.
-- La implementación utiliza `DriveApp`. Para escenarios especiales en unidades
-  compartidas puede ser necesario migrar al servicio avanzado de Drive.
+The current implementation uses `DriveApp`. For complete Shared Drive support,
+consider migrating folder and file operations to the Advanced Drive service.

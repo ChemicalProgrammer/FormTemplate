@@ -1,5 +1,5 @@
 /**
- * Punto de entrada de la aplicación web.
+ * Web application entry point.
  */
 function doGet() {
   return HtmlService.createTemplateFromFile('Index')
@@ -9,8 +9,8 @@ function doGet() {
 }
 
 /**
- * Permite dividir el HTML en archivos reutilizables.
- * @param {string} filename Nombre del archivo HTML sin extensión.
+ * Allows HTML to be split into reusable files.
+ * @param {string} filename HTML filename without the extension.
  * @return {string}
  */
 function include(filename) {
@@ -18,7 +18,7 @@ function include(filename) {
 }
 
 /**
- * Datos iniciales necesarios para construir la interfaz.
+ * Initial data required to build the interface.
  * @return {Object}
  */
 function getBootstrapData() {
@@ -32,13 +32,13 @@ function getBootstrapData() {
 }
 
 /**
- * Orquesta la validación, creación de carpetas y generación de la hoja.
- * @param {Object} payload Respuestas enviadas por la interfaz.
- * @return {Object} Enlaces a los elementos creados.
+ * Coordinates validation, folder creation, and spreadsheet generation.
+ * @param {Object} payload Answers submitted by the interface.
+ * @return {Object} Links to the created items.
  */
 function submitCase(payload) {
-  // Bloqueo compartido entre usuarios para evitar nombres duplicados si dos
-  // envíos llegan casi al mismo tiempo.
+  // Shared lock prevents duplicate names when two submissions arrive at
+  // nearly the same time.
   var lock = LockService.getScriptLock();
   lock.waitLock(APP_CONFIG.lockTimeoutMs);
 
@@ -66,13 +66,13 @@ function submitCase(payload) {
       spreadsheetName: generatedFile.getName()
     };
   } catch (error) {
-    // Si algo falla después de crear el caso, se envía esa carpeta nueva a la
-    // papelera para no dejar estructuras incompletas. Es recuperable en Drive.
+    // If generation fails after folder creation, the new case folder is moved
+    // to trash to avoid incomplete structures. It remains recoverable in Drive.
     if (caseFolder) {
       try {
         caseFolder.setTrashed(true);
       } catch (cleanupError) {
-        console.error('No se pudo limpiar la carpeta incompleta: ' + cleanupError.message);
+        console.error('The incomplete folder could not be cleaned up: ' + cleanupError.message);
       }
     }
     throw new Error(error && error.message ? error.message : String(error));

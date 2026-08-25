@@ -1,6 +1,6 @@
 /**
- * Autoprueba estructural que no crea ni modifica archivos en Drive.
- * Ejecútela desde el editor de Apps Script antes de desplegar.
+ * Structural self-test that does not create or modify Drive files.
+ * Run it from the Apps Script editor before deployment.
  * @return {Object}
  */
 function runProjectSelfTest() {
@@ -9,35 +9,41 @@ function runProjectSelfTest() {
   var sectionCFields = FORM_SCHEMA.sectionC.characteristics;
   var sectionDFields = FORM_SCHEMA.sectionD.fields;
 
-  assertTest_(sectionAFields.length === 10, 'A debe tener 10 campos en total.', errors);
+  assertTest_(sectionAFields.length === 9, 'Section A must have 9 fields after removing the duplicate case title.', errors);
   assertTest_(
-    sectionAFields.filter(function(field) { return field.type === 'text'; }).length === 1,
-    'A debe tener 1 respuesta corta.',
+    sectionAFields.filter(function(field) { return field.type === 'text'; }).length === 0,
+    'Section A must not repeat the case title as a short-response field.',
     errors
   );
   assertTest_(
     sectionAFields.filter(function(field) { return field.type === 'textarea'; }).length === 2,
-    'A debe tener 2 respuestas largas.',
+    'Section A must have 2 long-response fields.',
     errors
   );
   assertTest_(
     sectionAFields.filter(function(field) { return field.type === 'select'; }).length === 7,
-    'A debe tener 7 comboboxes.',
+    'Section A must have 7 dropdown fields.',
     errors
   );
-  assertTest_(sectionCFields.length === 15, 'C debe definir 15 características.', errors);
-  assertTest_(sectionDFields.length === 11, 'D debe definir 11 parámetros.', errors);
-  assertTest_(APP_CONFIG.numberedFolders.join(',') === '01,02,03,04', 'La estructura debe contener 01–04.', errors);
+  assertTest_(sectionCFields.length === 15, 'Section C must define 15 characteristics.', errors);
+  assertTest_(sectionDFields.length === 11, 'Section D must define 11 parameters.', errors);
+  assertTest_(APP_CONFIG.numberedFolders.join(',') === '01,02,03,04', 'The folder structure must contain 01–04.', errors);
+  assertTest_(
+    sectionAFields.every(function(field) { return field.required === false; }),
+    'Every Section A field must be optional.',
+    errors
+  );
   validateTemplateMappingForTest_(errors);
+  validateTitleOnlySubmissionForTest_(errors);
 
   var componentCodes = {};
   COMPONENT_DATABASE.forEach(function(component) {
-    assertTest_(!componentCodes[component.code], 'Código de componente repetido: ' + component.code, errors);
+    assertTest_(!componentCodes[component.code], 'Duplicate component code: ' + component.code, errors);
     componentCodes[component.code] = true;
     sectionCFields.forEach(function(characteristic) {
       assertTest_(
         Object.prototype.hasOwnProperty.call(component.characteristics, characteristic.id),
-        component.code + ' no contiene ' + characteristic.id + '.',
+        component.code + ' does not contain ' + characteristic.id + '.',
         errors
       );
     });
@@ -64,6 +70,34 @@ function runProjectSelfTest() {
   return result;
 }
 
+function validateTitleOnlySubmissionForTest_(errors) {
+  var normalized;
+  try {
+    normalized = validateAndNormalizePayload_({
+      caseName: 'Title-only test case',
+      sectionA: {},
+      components: [{ code: '', percentage: '' }],
+      sectionD: {}
+    });
+  } catch (error) {
+    errors.push('A title-only submission must be accepted: ' + error.message);
+    return;
+  }
+
+  assertTest_(
+    normalized.components.length === 0,
+    'A blank component row must be ignored.',
+    errors
+  );
+  assertTest_(
+    normalized.sectionD.D1.min === null &&
+      normalized.sectionD.D1.target === null &&
+      normalized.sectionD.D1.max === null,
+    'Blank Section D values must normalize to null.',
+    errors
+  );
+}
+
 function validateTemplateMappingForTest_(errors) {
   var mapping = SHEET_TEMPLATE_MAPPING || {};
   assertMappedCellForTest_(mapping.general && mapping.general.caseName, 'general.caseName', errors);
@@ -81,13 +115,13 @@ function validateTemplateMappingForTest_(errors) {
 
   ['sectionB', 'sectionC'].forEach(function(sectionKey) {
     var dynamicMapping = mapping[sectionKey] || {};
-    assertTest_(Boolean(dynamicMapping.sheet), sectionKey + '.sheet es obligatorio.', errors);
-    assertTest_(isPositiveInteger_(dynamicMapping.startRow), sectionKey + '.startRow debe ser un entero positivo.', errors);
-    assertTest_(isPositiveInteger_(dynamicMapping.maxRows), sectionKey + '.maxRows debe ser un entero positivo.', errors);
+    assertTest_(Boolean(dynamicMapping.sheet), sectionKey + '.sheet is required.', errors);
+    assertTest_(isPositiveInteger_(dynamicMapping.startRow), sectionKey + '.startRow must be a positive integer.', errors);
+    assertTest_(isPositiveInteger_(dynamicMapping.maxRows), sectionKey + '.maxRows must be a positive integer.', errors);
     ['code', 'name', 'percentage'].forEach(function(columnKey) {
       assertTest_(
         getColumnNumber_((dynamicMapping.columns || {})[columnKey]) > 0,
-        sectionKey + '.columns.' + columnKey + ' no es una columna válida.',
+        sectionKey + '.columns.' + columnKey + ' is not a valid column.',
         errors
       );
     });
@@ -99,7 +133,7 @@ function validateTemplateMappingForTest_(errors) {
     ).characteristics || {};
     assertTest_(
       getColumnNumber_(characteristicColumns[characteristic.id]) > 0,
-      'sectionC.columns.characteristics.' + characteristic.id + ' no es una columna válida.',
+      'sectionC.columns.characteristics.' + characteristic.id + ' is not a valid column.',
       errors
     );
   });
@@ -115,13 +149,13 @@ function validateTemplateMappingForTest_(errors) {
     });
   });
 
-  assertTest_(getColumnNumber_('A') === 1, 'La conversión de columna A falló.', errors);
-  assertTest_(getColumnNumber_('AA') === 27, 'La conversión de columna AA falló.', errors);
+  assertTest_(getColumnNumber_('A') === 1, 'Column A conversion failed.', errors);
+  assertTest_(getColumnNumber_('AA') === 27, 'Column AA conversion failed.', errors);
 }
 
 function assertMappedCellForTest_(target, path, errors) {
-  assertTest_(Boolean(target && target.sheet), path + ' debe indicar sheet.', errors);
-  assertTest_(Boolean(target && isA1Cell_(target.cell)), path + ' debe indicar una celda A1 válida.', errors);
+  assertTest_(Boolean(target && target.sheet), path + ' must define sheet.', errors);
+  assertTest_(Boolean(target && isA1Cell_(target.cell)), path + ' must define a valid A1 cell.', errors);
 }
 
 function assertTest_(condition, message, errors) {

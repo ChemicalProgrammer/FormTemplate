@@ -1,93 +1,86 @@
 /**
- * Definición editable de los campos del formulario.
+ * Editable form field definitions.
  *
- * Los IDs también son los marcadores de la plantilla para la sección A:
- * por ejemplo, el campo A_SHORT_1 se inserta usando {{A_SHORT_1}}.
+ * The case title is captured once above the sections and is not repeated in
+ * Section A. All fields in Sections A through D are optional.
  */
 var FORM_SCHEMA = Object.freeze({
   sectionA: {
-    title: 'A. Información general',
-    description: 'Capture la información principal del caso.',
+    title: 'A. General information',
+    description: 'Provide any available general information. All fields are optional.',
     fields: [
       {
-        id: 'A_SHORT_1',
-        label: 'Campo de respuesta corta',
-        type: 'text',
-        placeholder: 'Escriba una respuesta breve',
-        required: true
-      },
-      {
         id: 'A_LONG_1',
-        label: 'Campo de respuesta larga 1',
+        label: 'Long response 1',
         type: 'textarea',
-        placeholder: 'Describa la información requerida',
-        required: true
+        placeholder: 'Enter the available information',
+        required: false
       },
       {
         id: 'A_LONG_2',
-        label: 'Campo de respuesta larga 2',
+        label: 'Long response 2',
         type: 'textarea',
-        placeholder: 'Agregue los detalles necesarios',
-        required: true
+        placeholder: 'Add any relevant details',
+        required: false
       },
       {
         id: 'A_COMBO_1',
-        label: 'Opción 1',
+        label: 'Option 1',
         type: 'select',
-        options: ['Opción A', 'Opción B', 'Opción C'],
-        required: true
+        options: ['Option A', 'Option B', 'Option C'],
+        required: false
       },
       {
         id: 'A_COMBO_2',
-        label: 'Opción 2',
+        label: 'Option 2',
         type: 'select',
-        options: ['Opción A', 'Opción B', 'Opción C'],
-        required: true
+        options: ['Option A', 'Option B', 'Option C'],
+        required: false
       },
       {
         id: 'A_COMBO_3',
-        label: 'Opción 3',
+        label: 'Option 3',
         type: 'select',
-        options: ['Opción A', 'Opción B', 'Opción C'],
-        required: true
+        options: ['Option A', 'Option B', 'Option C'],
+        required: false
       },
       {
         id: 'A_COMBO_4',
-        label: 'Opción 4',
+        label: 'Option 4',
         type: 'select',
-        options: ['Opción A', 'Opción B', 'Opción C'],
-        required: true
+        options: ['Option A', 'Option B', 'Option C'],
+        required: false
       },
       {
         id: 'A_COMBO_5',
-        label: 'Opción 5',
+        label: 'Option 5',
         type: 'select',
-        options: ['Opción A', 'Opción B', 'Opción C'],
-        required: true
+        options: ['Option A', 'Option B', 'Option C'],
+        required: false
       },
       {
         id: 'A_COMBO_6',
-        label: 'Opción 6',
+        label: 'Option 6',
         type: 'select',
-        options: ['Opción A', 'Opción B', 'Opción C'],
-        required: true
+        options: ['Option A', 'Option B', 'Option C'],
+        required: false
       },
       {
         id: 'A_COMBO_7',
-        label: 'Opción 7',
+        label: 'Option 7',
         type: 'select',
-        options: ['Opción A', 'Opción B', 'Opción C'],
-        required: true
+        options: ['Option A', 'Option B', 'Option C'],
+        required: false
       }
     ]
   },
   sectionB: {
-    title: 'B. Componentes',
-    description: 'Agregue los componentes y asigne un porcentaje. La suma debe ser 100%.'
+    title: 'B. Components',
+    description: 'Optionally add predefined components and percentages. The total does not block case creation.'
   },
   sectionC: {
-    title: 'C. Características de componentes',
-    description: 'Las características se muestran automáticamente con base en los componentes seleccionados.',
+    title: 'C. Component characteristics',
+    description: 'Characteristics are displayed automatically for the components selected in Section B.',
     characteristics: [
       { id: 'C1', label: 'C1', unit: '-' },
       { id: 'C2', label: 'C2', unit: '-' },
@@ -107,20 +100,20 @@ var FORM_SCHEMA = Object.freeze({
     ]
   },
   sectionD: {
-    title: 'D. Parámetros y límites',
-    description: 'Capture los límites mínimo, objetivo y máximo.',
+    title: 'D. Parameters and limits',
+    description: 'Enter any available minimum, target, and maximum values. Every field is optional.',
     fields: [
-      { id: 'D1', label: 'Parámetro 1', unit: 'unidad' },
-      { id: 'D2', label: 'Parámetro 2', unit: 'unidad' },
-      { id: 'D3', label: 'Parámetro 3', unit: 'unidad' },
-      { id: 'D4', label: 'Parámetro 4', unit: 'unidad' },
-      { id: 'D5', label: 'Parámetro 5', unit: 'unidad' },
-      { id: 'D6', label: 'Parámetro 6', unit: 'unidad' },
-      { id: 'D7', label: 'Parámetro 7', unit: 'unidad' },
-      { id: 'D8', label: 'Parámetro 8', unit: 'unidad' },
-      { id: 'D9', label: 'Parámetro 9', unit: 'unidad' },
-      { id: 'D10', label: 'Parámetro 10', unit: 'unidad' },
-      { id: 'D11', label: 'Parámetro 11', unit: 'unidad' }
+      { id: 'D1', label: 'Parameter 1', unit: 'unit' },
+      { id: 'D2', label: 'Parameter 2', unit: 'unit' },
+      { id: 'D3', label: 'Parameter 3', unit: 'unit' },
+      { id: 'D4', label: 'Parameter 4', unit: 'unit' },
+      { id: 'D5', label: 'Parameter 5', unit: 'unit' },
+      { id: 'D6', label: 'Parameter 6', unit: 'unit' },
+      { id: 'D7', label: 'Parameter 7', unit: 'unit' },
+      { id: 'D8', label: 'Parameter 8', unit: 'unit' },
+      { id: 'D9', label: 'Parameter 9', unit: 'unit' },
+      { id: 'D10', label: 'Parameter 10', unit: 'unit' },
+      { id: 'D11', label: 'Parameter 11', unit: 'unit' }
     ]
   }
 });

@@ -1,37 +1,30 @@
-# Preparar la plantilla de Google Sheets
+# Preparing the Google Sheets template
 
-La aplicación copia una hoja de cálculo nativa de Google Sheets y después
-escribe los valores del formulario en la copia. No utiliza marcadores de texto.
+The application copies a native Google Sheets file and writes form values into
+the copy. It does not use text placeholders.
 
-## Archivo que controla las celdas
+## Cell mapping
 
-Edite `TemplateMapping.gs` dentro de Apps Script. Cada destino indica:
-
-```javascript
-{ sheet: 'Formulario', cell: 'B2' }
-```
-
-- `sheet`: nombre exacto de la pestaña de la plantilla.
-- `cell`: celda en notación A1.
-
-## Campos individuales
-
-`general`, `sectionA` y `sectionD` se configuran celda por celda. Ejemplo:
+Edit `TemplateMapping.gs`. Each individual destination contains:
 
 ```javascript
-sectionD: {
-  D1: { sheet: 'Formulario', min: 'B20', target: 'C20', max: 'D20' }
-}
+{ sheet: 'Form', cell: 'B2' }
 ```
 
-## Listas de componentes
+- `sheet` is the exact template tab name.
+- `cell` uses A1 notation.
 
-Las secciones B y C pueden tener una cantidad variable de componentes. Se
-configura una fila inicial y una columna por dato:
+The case title is captured once above the form and written through
+`general.caseName`. It is not part of Section A.
+
+## Component lists
+
+Sections B and C support a variable number of components. Configure their first
+row and destination columns:
 
 ```javascript
 sectionB: {
-  sheet: 'Componentes',
+  sheet: 'Components',
   startRow: 3,
   maxRows: 50,
   percentageAsDecimal: true,
@@ -39,19 +32,22 @@ sectionB: {
 }
 ```
 
-El primer componente se escribe en la fila 3, el segundo en la 4 y así
-sucesivamente. `maxRows` limita la capacidad reservada en la plantilla.
+The first selected component is written to row 3, the second to row 4, and so
+on. `maxRows` is the maximum reserved capacity.
 
-Cuando `percentageAsDecimal` es `true`, un valor capturado como 25 se escribe
-como `0.25`. Deje las celdas de esa columna con formato de porcentaje en la
-plantilla. Use `false` si necesita escribir el número 25.
+When `percentageAsDecimal` is `true`, an entered value of 25% is written as
+`0.25`. Format those template cells as percentages. A blank percentage remains
+blank.
 
-## Reglas
+## Optional values
 
-- La plantilla debe ser un archivo nativo de Google Sheets.
-- Los nombres de las pestañas deben coincidir exactamente con el mapa.
-- Prepare de antemano estilos, formatos numéricos, fórmulas y celdas combinadas.
-- Las celdas mapeadas deben ser editables y no estar protegidas para el usuario
-  que ejecuta la aplicación.
-- No coloque fórmulas en las celdas que recibirán valores del formulario; serán
-  sustituidas en la copia.
+Sections A, B, and D may be empty. Empty mapped values are written as blank
+cells. Section B and C write nothing when no components are selected.
+
+## Rules
+
+- The template must be a native Google Sheets file.
+- Sheet names must exactly match `TemplateMapping.gs`.
+- Prepare styles, number formats, formulas, and merged cells in advance.
+- Mapped cells must be editable by the user running the application.
+- Do not place formulas in cells that are intended to receive form values.

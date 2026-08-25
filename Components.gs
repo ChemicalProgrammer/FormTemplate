@@ -1,17 +1,17 @@
 /**
- * Base de datos editable de componentes.
+ * Editable component database.
  *
- * Reemplace los ejemplos por los componentes reales. Cada componente debe
- * conservar un código único y 15 valores de características (C1 a C15).
- * Consulte COMPONENT_DATABASE_EXAMPLE.md para ver un ejemplo completo.
+ * Replace these examples with real components. Every component must have a
+ * unique code and 15 characteristic values (C1 through C15).
+ * See COMPONENT_DATABASE_EXAMPLE.md for a complete example.
  */
 var COMPONENT_DATABASE = Object.freeze([
-  createExampleComponent_('COMP-001', 'Componente 1', 10),
-  createExampleComponent_('COMP-002', 'Componente 2', 20),
-  createExampleComponent_('COMP-003', 'Componente 3', 30),
-  createExampleComponent_('COMP-004', 'Componente 4', 40),
-  createExampleComponent_('COMP-005', 'Componente 5', 50),
-  createExampleComponent_('COMP-006', 'Componente 6', 60)
+  createExampleComponent_('COMP-001', 'Component 1', 10),
+  createExampleComponent_('COMP-002', 'Component 2', 20),
+  createExampleComponent_('COMP-003', 'Component 3', 30),
+  createExampleComponent_('COMP-004', 'Component 4', 40),
+  createExampleComponent_('COMP-005', 'Component 5', 50),
+  createExampleComponent_('COMP-006', 'Component 6', 60)
 ]);
 
 function createExampleComponent_(code, name, seed) {

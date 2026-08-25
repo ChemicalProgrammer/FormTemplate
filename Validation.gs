@@ -1,20 +1,20 @@
 /**
- * Valida el payload completo y devuelve una copia normalizada.
+ * Validates the payload and returns a normalized copy.
+ * The case title is the only required form value.
  * @param {Object} payload
  * @return {Object}
  */
 function validateAndNormalizePayload_(payload) {
   if (!payload || typeof payload !== 'object') {
-    throw new Error('No se recibieron datos del formulario.');
+    throw new Error('No form data was received.');
   }
 
-  var normalized = {
+  return {
     caseName: normalizeCaseName_(payload.caseName),
     sectionA: validateSectionA_(payload.sectionA || {}),
     components: validateComponents_(payload.components || []),
     sectionD: validateSectionD_(payload.sectionD || {})
   };
-  return normalized;
 }
 
 function normalizeCaseName_(value) {
@@ -24,93 +24,90 @@ function normalizeCaseName_(value) {
     .trim();
 
   if (!name) {
-    throw new Error('El nombre del caso es obligatorio.');
+    throw new Error('The case title is required.');
   }
   if (name.length > APP_CONFIG.maxCaseNameLength) {
-    throw new Error('El nombre del caso no puede exceder ' + APP_CONFIG.maxCaseNameLength + ' caracteres.');
+    throw new Error(
+      'The case title cannot exceed ' + APP_CONFIG.maxCaseNameLength + ' characters.'
+    );
   }
   return name;
 }
 
 function validateSectionA_(answers) {
   var normalized = {};
+
   FORM_SCHEMA.sectionA.fields.forEach(function(field) {
-    var value = String(answers[field.id] == null ? '' : answers[field.id]).trim();
-    if (field.required && !value) {
-      throw new Error('Complete el campo “' + field.label + '” de la sección A.');
+    var value = String(
+      answers[field.id] == null ? '' : answers[field.id]
+    ).trim();
+
+    // Ignore an unknown select value instead of blocking case creation.
+    if (
+      field.type === 'select' &&
+      value &&
+      field.options.indexOf(value) === -1
+    ) {
+      value = '';
     }
-    if (field.type === 'select' && value && field.options.indexOf(value) === -1) {
-      throw new Error('La selección de “' + field.label + '” no es válida.');
-    }
+
     normalized[field.id] = value;
   });
   return normalized;
 }
 
 function validateComponents_(items) {
-  if (!Array.isArray(items) || items.length === 0) {
-    throw new Error('Agregue al menos un componente en la sección B.');
+  if (!Array.isArray(items)) {
+    return [];
   }
 
   var database = getComponentMap_();
   var seen = {};
-  var total = 0;
-  var normalized = items.map(function(item) {
-    var code = String(item.code || '').trim();
-    var percentage = parseNumber_(item.percentage);
+
+  return items.reduce(function(normalized, item) {
+    var code = String((item && item.code) || '').trim();
+
+    // Ignore the initial blank row, unknown codes, and duplicate rows.
+    if (!code || !database[code] || seen[code]) {
+      return normalized;
+    }
+
     var component = database[code];
-
-    if (!component) {
-      throw new Error('Uno de los componentes seleccionados no existe en la base de datos.');
-    }
-    if (seen[code]) {
-      throw new Error('El componente ' + code + ' está repetido.');
-    }
-    if (!isFinite(percentage) || percentage <= 0 || percentage > 100) {
-      throw new Error('El porcentaje de ' + code + ' debe ser mayor que 0 y menor o igual que 100.');
-    }
-
     seen[code] = true;
-    total += percentage;
-    return {
+    normalized.push({
       code: component.code,
       name: component.name,
-      percentage: percentage,
+      percentage: parseOptionalNumber_(item.percentage),
       characteristics: JSON.parse(JSON.stringify(component.characteristics))
-    };
-  });
-
-  if (Math.abs(total - 100) > APP_CONFIG.percentageTolerance) {
-    throw new Error('La suma de componentes debe ser 100%. Actualmente es ' + formatNumber_(total) + '%.');
-  }
-  return normalized;
+    });
+    return normalized;
+  }, []);
 }
 
 function validateSectionD_(answers) {
   var normalized = {};
+
   FORM_SCHEMA.sectionD.fields.forEach(function(field) {
     var item = answers[field.id] || {};
-    var min = parseNumber_(item.min);
-    var target = parseNumber_(item.target);
-    var max = parseNumber_(item.max);
-
-    if (![min, target, max].every(isFinite)) {
-      throw new Error('Complete Min, Target y Max para “' + field.label + '”.');
-    }
-    if (!(min <= target && target <= max)) {
-      throw new Error('En “' + field.label + '” debe cumplirse Min ≤ Target ≤ Max.');
-    }
-    normalized[field.id] = { min: min, target: target, max: max };
+    normalized[field.id] = {
+      min: parseOptionalNumber_(item.min),
+      target: parseOptionalNumber_(item.target),
+      max: parseOptionalNumber_(item.max)
+    };
   });
   return normalized;
 }
 
-function parseNumber_(value) {
-  if (typeof value === 'number') {
-    return value;
+function parseOptionalNumber_(value) {
+  if (value == null || value === '') {
+    return null;
   }
-  var text = String(value == null ? '' : value).trim().replace(',', '.');
-  return text === '' ? NaN : Number(text);
+
+  var text = String(value).trim().replace(',', '.');
+  if (!text) return null;
+
+  var parsed = Number(text);
+  return isFinite(parsed) ? parsed : null;
 }
 
 function formatNumber_(value) {

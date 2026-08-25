@@ -1,6 +1,6 @@
 /**
- * Copia una plantilla de Google Sheets y escribe el formulario de acuerdo con
- * SHEET_TEMPLATE_MAPPING, definido en TemplateMapping.gs.
+ * Copies a Google Sheets template and writes the form according to
+ * SHEET_TEMPLATE_MAPPING in TemplateMapping.gs.
  * @param {string} templateSpreadsheetId
  * @param {GoogleAppsScript.Drive.Folder} outputFolder
  * @param {Object} data
@@ -110,7 +110,7 @@ function writeSectionD_(spreadsheet, answers) {
 
 function writeMappedCell_(spreadsheet, target, value, mappingPath) {
   if (!target || !target.sheet || !isA1Cell_(target.cell)) {
-    throw new Error('El mapeo “' + mappingPath + '” no tiene una hoja/celda válida.');
+    throw new Error('Mapping “' + mappingPath + '” does not contain a valid sheet and cell.');
   }
   var sheet = getMappedSheet_(spreadsheet, target.sheet, mappingPath);
   sheet.getRange(target.cell).setValue(normalizeMappedValue_(value));
@@ -119,7 +119,7 @@ function writeMappedCell_(spreadsheet, target, value, mappingPath) {
 function writeColumnValues_(sheet, startRow, column, values, mappingPath) {
   var columnNumber = getColumnNumber_(column);
   if (!columnNumber || !isPositiveInteger_(startRow)) {
-    throw new Error('El mapeo “' + mappingPath + '” tiene una fila o columna inválida.');
+    throw new Error('Mapping “' + mappingPath + '” contains an invalid row or column.');
   }
   sheet.getRange(startRow, columnNumber, values.length, 1).setValues(values.map(function(value) {
     return [normalizeMappedValue_(value)];
@@ -130,8 +130,8 @@ function getMappedSheet_(spreadsheet, sheetName, mappingPath) {
   var sheet = spreadsheet.getSheetByName(sheetName);
   if (!sheet) {
     throw new Error(
-      'No existe la hoja “' + sheetName + '” indicada en “' + mappingPath + '”. ' +
-      'Revise TemplateMapping.gs y la plantilla.'
+      'Sheet “' + sheetName + '” defined in “' + mappingPath + '” does not exist. ' +
+      'Review TemplateMapping.gs and the template.'
     );
   }
   return sheet;
@@ -139,17 +139,20 @@ function getMappedSheet_(spreadsheet, sheetName, mappingPath) {
 
 function assertRowCapacity_(count, mapping, sectionName) {
   if (!isPositiveInteger_(mapping.startRow) || !isPositiveInteger_(mapping.maxRows)) {
-    throw new Error('startRow y maxRows de la sección ' + sectionName + ' deben ser enteros positivos.');
+    throw new Error('startRow and maxRows for Section ' + sectionName + ' must be positive integers.');
   }
   if (count > mapping.maxRows) {
     throw new Error(
-      'La sección ' + sectionName + ' admite hasta ' + mapping.maxRows +
-      ' componentes según TemplateMapping.gs.'
+      'Section ' + sectionName + ' supports up to ' + mapping.maxRows +
+      ' components according to TemplateMapping.gs.'
     );
   }
 }
 
 function mappedPercentage_(percentage, asDecimal) {
+  if (percentage == null || percentage === '') {
+    return '';
+  }
   return asDecimal ? percentage / 100 : percentage;
 }
 

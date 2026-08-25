@@ -1,5 +1,5 @@
 /**
- * Obtiene las opciones particulares del usuario actual.
+ * Returns settings for the current user.
  * @return {{destinationFolderId:string, templateSpreadsheetId:string}}
  */
 function getUserSettings() {
@@ -15,8 +15,8 @@ function getUserSettings() {
 }
 
 /**
- * Valida y guarda la carpeta destino y la plantilla de Google Sheets.
- * Acepta tanto IDs como URLs de Drive.
+ * Validates and saves the destination folder and Google Sheets template.
+ * Accepts Drive IDs or complete URLs.
  * @param {Object} settings
  * @return {Object}
  */
@@ -26,7 +26,7 @@ function saveUserSettings(settings) {
   var templateSpreadsheetId = extractDriveId_(settings.templateSpreadsheetId);
 
   if (!destinationFolderId || !templateSpreadsheetId) {
-    throw new Error('Ingrese una carpeta destino y una plantilla válidas. Puede pegar el enlace completo o el ID.');
+    throw new Error('Enter a valid destination folder and template. You may paste the complete URL or ID.');
   }
 
   var folder;
@@ -35,18 +35,18 @@ function saveUserSettings(settings) {
     folder = DriveApp.getFolderById(destinationFolderId);
     folder.getName();
   } catch (error) {
-    throw new Error('No se pudo abrir la carpeta destino. Revise el ID y sus permisos.');
+    throw new Error('The destination folder could not be opened. Check the ID and your permissions.');
   }
 
   try {
     template = DriveApp.getFileById(templateSpreadsheetId);
     template.getName();
   } catch (error) {
-    throw new Error('No se pudo abrir la plantilla. Revise el ID y sus permisos.');
+    throw new Error('The template could not be opened. Check the ID and your permissions.');
   }
 
   if (template.getMimeType() !== MimeType.GOOGLE_SHEETS) {
-    throw new Error('La plantilla debe ser un archivo nativo de Google Sheets.');
+    throw new Error('The template must be a native Google Sheets file.');
   }
 
   var properties = PropertiesService.getUserProperties();
@@ -72,18 +72,18 @@ function areSettingsComplete_() {
 function getValidatedSettings_() {
   var settings = getUserSettings();
   if (!settings.destinationFolderId || !settings.templateSpreadsheetId) {
-    throw new Error('Configure la carpeta destino y la plantilla antes de crear un caso.');
+    throw new Error('Configure the destination folder and template before creating a case.');
   }
 
-  // Se vuelven a validar los permisos porque pueden cambiar después de guardar.
+  // Revalidate permissions because they may change after settings are saved.
   try {
     DriveApp.getFolderById(settings.destinationFolderId).getName();
     var template = DriveApp.getFileById(settings.templateSpreadsheetId);
     if (template.getMimeType() !== MimeType.GOOGLE_SHEETS) {
-      throw new Error('La plantilla ya no es un archivo de Google Sheets.');
+      throw new Error('The template is no longer a Google Sheets file.');
     }
   } catch (error) {
-    throw new Error('Las opciones guardadas ya no son accesibles. Ábralas y vuelva a guardar los enlaces.');
+    throw new Error('The saved settings are no longer accessible. Open Settings and save the links again.');
   }
   return settings;
 }

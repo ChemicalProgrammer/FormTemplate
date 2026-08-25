@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
   <head>
     <base target="_top">
     <meta charset="utf-8">
@@ -9,7 +9,7 @@
     <div id="busy-overlay" class="busy-overlay" aria-live="polite">
       <div class="loader-card">
         <div class="spinner" aria-hidden="true"></div>
-        <p id="busy-message">Cargando formulario…</p>
+        <p id="busy-message">Loading form…</p>
       </div>
     </div>
 
@@ -18,10 +18,10 @@
         <div class="brand-mark" aria-hidden="true">CF</div>
         <div>
           <h1 id="app-name">Case Form</h1>
-          <p>Creación de expedientes y hojas de cálculo</p>
+          <p>Case folders and spreadsheet generation</p>
         </div>
       </div>
-      <button id="settings-button" class="icon-button" type="button" aria-label="Abrir opciones" title="Opciones">
+      <button id="settings-button" class="icon-button" type="button" aria-label="Open settings" title="Settings">
         <span aria-hidden="true">⚙</span>
       </button>
     </header>
@@ -29,16 +29,16 @@
     <main class="page-shell">
       <div id="settings-warning" class="notice notice-warning hidden" role="alert">
         <div>
-          <strong>Falta configurar la aplicación.</strong>
-          <span>Guarde la carpeta destino y la plantilla antes de crear un caso.</span>
+          <strong>Application setup is incomplete.</strong>
+          <span>Save the destination folder and template before creating a case.</span>
         </div>
-        <button id="warning-settings-button" class="text-button" type="button">Abrir opciones</button>
+        <button id="warning-settings-button" class="text-button" type="button">Open settings</button>
       </div>
 
       <form id="case-form" novalidate>
         <section class="card case-card">
-          <div class="section-kicker">Nuevo expediente</div>
-          <label class="field-label" for="case-name">Nombre del caso <span class="required-mark">*</span></label>
+          <div class="section-kicker">New case</div>
+          <label class="field-label" for="case-name">Case title <span class="required-mark">*</span></label>
           <input
             id="case-name"
             name="caseName"
@@ -46,31 +46,31 @@
             type="text"
             maxlength="120"
             autocomplete="off"
-            placeholder="Ej. Caso 2026-001"
+            placeholder="Example: Case 2026-001"
           >
-          <p class="field-help">Se creará una carpeta con este nombre y las subcarpetas 01, 02, 03 y 04.</p>
+          <p class="field-help">A folder with this title and subfolders 01, 02, 03, and 04 will be created.</p>
         </section>
 
-        <nav class="step-tabs" aria-label="Secciones del formulario">
+        <nav class="step-tabs" aria-label="Form sections">
           <button class="step-tab active" data-section="0" type="button">
-            <span class="step-letter">A</span><span>Información</span>
+            <span class="step-letter">A</span><span>Information</span>
           </button>
           <button class="step-tab" data-section="1" type="button">
-            <span class="step-letter">B</span><span>Componentes</span>
+            <span class="step-letter">B</span><span>Components</span>
           </button>
           <button class="step-tab" data-section="2" type="button">
-            <span class="step-letter">C</span><span>Características</span>
+            <span class="step-letter">C</span><span>Characteristics</span>
           </button>
           <button class="step-tab" data-section="3" type="button">
-            <span class="step-letter">D</span><span>Parámetros</span>
+            <span class="step-letter">D</span><span>Parameters</span>
           </button>
         </nav>
 
         <section class="card form-panel active" data-panel="0">
           <div class="section-heading">
             <div>
-              <div class="section-kicker">Sección A</div>
-              <h2 id="section-a-title">Información general</h2>
+              <div class="section-kicker">Section A</div>
+              <h2 id="section-a-title">General information</h2>
               <p id="section-a-description"></p>
             </div>
           </div>
@@ -80,44 +80,44 @@
         <section class="card form-panel" data-panel="1">
           <div class="section-heading heading-with-action">
             <div>
-              <div class="section-kicker">Sección B</div>
-              <h2 id="section-b-title">Componentes</h2>
+              <div class="section-kicker">Section B</div>
+              <h2 id="section-b-title">Components</h2>
               <p id="section-b-description"></p>
             </div>
             <button id="add-component-button" class="secondary-button" type="button">
-              <span aria-hidden="true">＋</span> Agregar componente
+              <span aria-hidden="true">＋</span> Add component
             </button>
           </div>
 
           <div class="component-table-head" aria-hidden="true">
-            <span>Código</span><span>Nombre</span><span>Porcentaje</span><span></span>
+            <span>Code</span><span>Name</span><span>Percentage</span><span></span>
           </div>
           <div id="component-rows" class="component-rows"></div>
 
           <div class="percentage-summary">
             <div>
-              <span class="summary-label">Suma de componentes</span>
+              <span class="summary-label">Component total</span>
               <strong id="percentage-total">0%</strong>
             </div>
             <div class="progress-track" aria-hidden="true">
               <div id="percentage-bar" class="progress-bar"></div>
             </div>
-            <p id="percentage-message">La suma debe ser exactamente 100%.</p>
+            <p id="percentage-message">Components and percentages are optional.</p>
           </div>
         </section>
 
         <section class="card form-panel" data-panel="2">
           <div class="section-heading">
             <div>
-              <div class="section-kicker">Sección C</div>
-              <h2 id="section-c-title">Características de componentes</h2>
+              <div class="section-kicker">Section C</div>
+              <h2 id="section-c-title">Component characteristics</h2>
               <p id="section-c-description"></p>
             </div>
           </div>
           <div id="section-c-empty" class="empty-state">
             <div class="empty-icon" aria-hidden="true">◫</div>
-            <strong>Aún no hay componentes</strong>
-            <p>Seleccione componentes en la sección B para consultar sus 15 características.</p>
+            <strong>No components selected</strong>
+            <p>Select components in Section B to view their 15 characteristics.</p>
           </div>
           <div id="characteristic-table-container" class="characteristic-table-shell hidden">
             <table id="characteristic-table" class="characteristic-table">
@@ -130,8 +130,8 @@
         <section class="card form-panel" data-panel="3">
           <div class="section-heading">
             <div>
-              <div class="section-kicker">Sección D</div>
-              <h2 id="section-d-title">Parámetros y límites</h2>
+              <div class="section-kicker">Section D</div>
+              <h2 id="section-d-title">Parameters and limits</h2>
               <p id="section-d-description"></p>
             </div>
           </div>
@@ -139,8 +139,8 @@
             <table class="parameter-table">
               <thead>
                 <tr>
-                  <th>Parámetro</th>
-                  <th>Unidad</th>
+                  <th>Parameter</th>
+                  <th>Unit</th>
                   <th>Min</th>
                   <th>Target</th>
                   <th>Max</th>
@@ -152,11 +152,11 @@
         </section>
 
         <div class="form-actions">
-          <button id="previous-button" class="secondary-button hidden" type="button">Anterior</button>
+          <button id="previous-button" class="secondary-button hidden" type="button">Previous</button>
           <div class="action-spacer"></div>
-          <button id="next-button" class="primary-button" type="button">Siguiente</button>
+          <button id="next-button" class="primary-button" type="button">Next</button>
           <button id="submit-button" class="primary-button hidden" type="submit">
-            Crear caso y hoja
+            Create case and spreadsheet
           </button>
         </div>
       </form>
@@ -166,42 +166,43 @@
       <div class="modal-card">
         <div class="modal-header">
           <div>
-            <div class="section-kicker">Configuración personal</div>
-            <h2 id="settings-title">Opciones</h2>
+            <div class="section-kicker">Personal configuration</div>
+            <h2 id="settings-title">Settings</h2>
           </div>
-          <button id="close-settings-button" class="icon-button small" type="button" aria-label="Cerrar">×</button>
+          <button id="close-settings-button" class="icon-button small" type="button" aria-label="Close">×</button>
         </div>
-        <p class="modal-intro">Pegue el enlace completo de Drive o solamente el ID. Estas opciones se guardan para el usuario actual.</p>
+        <p class="modal-intro">Paste the complete Drive link or only the ID. These settings are saved for the current user.</p>
         <div class="modal-fields">
           <div class="field-group full-width">
-            <label class="field-label" for="destination-folder">Carpeta destino <span class="required-mark">*</span></label>
+            <label class="field-label" for="destination-folder">Destination folder <span class="required-mark">*</span></label>
             <input id="destination-folder" class="text-input" type="text" autocomplete="off" placeholder="https://drive.google.com/drive/folders/…">
-            <p class="field-help">Aquí se crearán las carpetas de cada caso.</p>
+            <p class="field-help">Case folders will be created here.</p>
           </div>
           <div class="field-group full-width">
-            <label class="field-label" for="template-spreadsheet">Plantilla de Google Sheets <span class="required-mark">*</span></label>
+            <label class="field-label" for="template-spreadsheet">Google Sheets template <span class="required-mark">*</span></label>
             <input id="template-spreadsheet" class="text-input" type="text" autocomplete="off" placeholder="https://docs.google.com/spreadsheets/d/…">
-            <p class="field-help">El sistema copiará esta hoja de cálculo dentro de la carpeta 01.</p>
+            <p class="field-help">The spreadsheet will be copied into folder 01.</p>
           </div>
         </div>
         <div id="settings-feedback" class="inline-feedback hidden"></div>
         <div class="modal-actions">
-          <button id="cancel-settings-button" class="secondary-button" type="button">Cancelar</button>
-          <button id="save-settings-button" class="primary-button" type="button">Validar y guardar</button>
+          <button id="cancel-settings-button" class="secondary-button" type="button">Cancel</button>
+          <button id="save-settings-button" class="primary-button" type="button">Validate and save</button>
         </div>
       </div>
     </div>
 
     <div id="success-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="success-title">
       <div class="modal-card success-card">
+        <button id="close-success-button" class="icon-button small success-close-button" type="button" aria-label="Close" title="Close">×</button>
         <div class="success-icon" aria-hidden="true">✓</div>
-        <h2 id="success-title">Caso creado correctamente</h2>
+        <h2 id="success-title">Case created successfully</h2>
         <p id="success-message"></p>
         <div class="success-links">
-          <a id="open-spreadsheet-link" class="primary-button link-button" href="#" target="_blank">Abrir hoja de cálculo</a>
-          <a id="open-folder-link" class="secondary-button link-button" href="#" target="_blank">Abrir carpeta del caso</a>
+          <a id="open-spreadsheet-link" class="primary-button link-button" href="#" target="_blank">Open spreadsheet</a>
+          <a id="open-folder-link" class="secondary-button link-button" href="#" target="_blank">Open case folder</a>
         </div>
-        <button id="create-another-button" class="text-button" type="button">Crear otro caso</button>
+        <button id="create-another-button" class="text-button" type="button">Create another case</button>
       </div>
     </div>
 
