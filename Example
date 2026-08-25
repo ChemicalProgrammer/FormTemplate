@@ -1,0 +1,23 @@
+var COMPONENT_DATABASE = Object.freeze([
+  {
+    code: 'RM-0001',
+    name: 'Purified Water',
+    characteristics: {
+      C1: 'Carrier / intermediate',
+      C2: 'Water',
+      C3: 'Liquid',
+      C4: 'Clear and colorless',
+      C5: 0,
+      C6: 7.0,
+      C7: 1.0,
+      C8: 1,
+      C9: 'Completely soluble',
+      C10: 5,
+      C11: 35,
+      C12: 'Bulk',
+      C13: 'Approved supplier A',
+      C14: 'Active',
+      C15: ''
+    }
+  }
+]);
