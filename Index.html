@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <?!= include('Styles'); ?>
+  </head>
+  <body>
+    <div id="busy-overlay" class="busy-overlay" aria-live="polite">
+      <div class="loader-card">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="busy-message">Cargando formulario…</p>
+      </div>
+    </div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">CF</div>
+        <div>
+          <h1 id="app-name">Case Form</h1>
+          <p>Creación de expedientes y hojas de cálculo</p>
+        </div>
+      </div>
+      <button id="settings-button" class="icon-button" type="button" aria-label="Abrir opciones" title="Opciones">
+        <span aria-hidden="true">⚙</span>
+      </button>
+    </header>
+
+    <main class="page-shell">
+      <div id="settings-warning" class="notice notice-warning hidden" role="alert">
+        <div>
+          <strong>Falta configurar la aplicación.</strong>
+          <span>Guarde la carpeta destino y la plantilla antes de crear un caso.</span>
+        </div>
+        <button id="warning-settings-button" class="text-button" type="button">Abrir opciones</button>
+      </div>
+
+      <form id="case-form" novalidate>
+        <section class="card case-card">
+          <div class="section-kicker">Nuevo expediente</div>
+          <label class="field-label" for="case-name">Nombre del caso <span class="required-mark">*</span></label>
+          <input
+            id="case-name"
+            name="caseName"
+            class="text-input case-name-input"
+            type="text"
+            maxlength="120"
+            autocomplete="off"
+            placeholder="Ej. Caso 2026-001"
+          >
+          <p class="field-help">Se creará una carpeta con este nombre y las subcarpetas 01, 02, 03 y 04.</p>
+        </section>
+
+        <nav class="step-tabs" aria-label="Secciones del formulario">
+          <button class="step-tab active" data-section="0" type="button">
+            <span class="step-letter">A</span><span>Información</span>
+          </button>
+          <button class="step-tab" data-section="1" type="button">
+            <span class="step-letter">B</span><span>Componentes</span>
+          </button>
+          <button class="step-tab" data-section="2" type="button">
+            <span class="step-letter">C</span><span>Características</span>
+          </button>
+          <button class="step-tab" data-section="3" type="button">
+            <span class="step-letter">D</span><span>Parámetros</span>
+          </button>
+        </nav>
+
+        <section class="card form-panel active" data-panel="0">
+          <div class="section-heading">
+            <div>
+              <div class="section-kicker">Sección A</div>
+              <h2 id="section-a-title">Información general</h2>
+              <p id="section-a-description"></p>
+            </div>
+          </div>
+          <div id="section-a-fields" class="field-grid"></div>
+        </section>
+
+        <section class="card form-panel" data-panel="1">
+          <div class="section-heading heading-with-action">
+            <div>
+              <div class="section-kicker">Sección B</div>
+              <h2 id="section-b-title">Componentes</h2>
+              <p id="section-b-description"></p>
+            </div>
+            <button id="add-component-button" class="secondary-button" type="button">
+              <span aria-hidden="true">＋</span> Agregar componente
+            </button>
+          </div>
+
+          <div class="component-table-head" aria-hidden="true">
+            <span>Código</span><span>Nombre</span><span>Porcentaje</span><span></span>
+          </div>
+          <div id="component-rows" class="component-rows"></div>
+
+          <div class="percentage-summary">
+            <div>
+              <span class="summary-label">Suma de componentes</span>
+              <strong id="percentage-total">0%</strong>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <div id="percentage-bar" class="progress-bar"></div>
+            </div>
+            <p id="percentage-message">La suma debe ser exactamente 100%.</p>
+          </div>
+        </section>
+
+        <section class="card form-panel" data-panel="2">
+          <div class="section-heading">
+            <div>
+              <div class="section-kicker">Sección C</div>
+              <h2 id="section-c-title">Características de componentes</h2>
+              <p id="section-c-description"></p>
+            </div>
+          </div>
+          <div id="section-c-empty" class="empty-state">
+            <div class="empty-icon" aria-hidden="true">◫</div>
+            <strong>Aún no hay componentes</strong>
+            <p>Seleccione componentes en la sección B para consultar sus 15 características.</p>
+          </div>
+          <div id="characteristic-cards" class="characteristic-cards"></div>
+        </section>
+
+        <section class="card form-panel" data-panel="3">
+          <div class="section-heading">
+            <div>
+              <div class="section-kicker">Sección D</div>
+              <h2 id="section-d-title">Parámetros y límites</h2>
+              <p id="section-d-description"></p>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="parameter-table">
+              <thead>
+                <tr>
+                  <th>Parámetro</th>
+                  <th>Unidad</th>
+                  <th>Min</th>
+                  <th>Target</th>
+                  <th>Max</th>
+                </tr>
+              </thead>
+              <tbody id="section-d-fields"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <button id="previous-button" class="secondary-button hidden" type="button">Anterior</button>
+          <div class="action-spacer"></div>
+          <button id="next-button" class="primary-button" type="button">Siguiente</button>
+          <button id="submit-button" class="primary-button hidden" type="submit">
+            Crear caso y hoja
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <div id="settings-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <div class="section-kicker">Configuración personal</div>
+            <h2 id="settings-title">Opciones</h2>
+          </div>
+          <button id="close-settings-button" class="icon-button small" type="button" aria-label="Cerrar">×</button>
+        </div>
+        <p class="modal-intro">Pegue el enlace completo de Drive o solamente el ID. Estas opciones se guardan para el usuario actual.</p>
+        <div class="modal-fields">
+          <div class="field-group full-width">
+            <label class="field-label" for="destination-folder">Carpeta destino <span class="required-mark">*</span></label>
+            <input id="destination-folder" class="text-input" type="text" autocomplete="off" placeholder="https://drive.google.com/drive/folders/…">
+            <p class="field-help">Aquí se crearán las carpetas de cada caso.</p>
+          </div>
+          <div class="field-group full-width">
+            <label class="field-label" for="template-spreadsheet">Plantilla de Google Sheets <span class="required-mark">*</span></label>
+            <input id="template-spreadsheet" class="text-input" type="text" autocomplete="off" placeholder="https://docs.google.com/spreadsheets/d/…">
+            <p class="field-help">El sistema copiará esta hoja de cálculo dentro de la carpeta 01.</p>
+          </div>
+        </div>
+        <div id="settings-feedback" class="inline-feedback hidden"></div>
+        <div class="modal-actions">
+          <button id="cancel-settings-button" class="secondary-button" type="button">Cancelar</button>
+          <button id="save-settings-button" class="primary-button" type="button">Validar y guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="success-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="success-title">
+      <div class="modal-card success-card">
+        <div class="success-icon" aria-hidden="true">✓</div>
+        <h2 id="success-title">Caso creado correctamente</h2>
+        <p id="success-message"></p>
+        <div class="success-links">
+          <a id="open-spreadsheet-link" class="primary-button link-button" href="#" target="_blank">Abrir hoja de cálculo</a>
+          <a id="open-folder-link" class="secondary-button link-button" href="#" target="_blank">Abrir carpeta del caso</a>
+        </div>
+        <button id="create-another-button" class="text-button" type="button">Crear otro caso</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <?!= include('Scripts'); ?>
+  </body>
+</html>
